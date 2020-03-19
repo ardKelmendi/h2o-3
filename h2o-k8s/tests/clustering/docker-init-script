@@ -1,0 +1,15 @@
+#! /bin/bash -x
+
+k3d --version
+k3d delete
+k3d create --publish 8080:80 --api-port localhost:6444 --server-arg --tls-san="127.0.0.1" --wait 0 
+export KUBECONFIG="$(k3d get-kubeconfig --name='k3s-default')"
+kubectl cluster-info
+sleep 15 # Making sure the default namespace is initialized. The --wait flag does not guarantee this.
+kubectl get namespaces
+kubectl apply -f h2o-service.yaml
+sleep 320 # Waiting for a service is broken in K8S
+kubectl cluster-info dump
+kubectl get pods
+kubectl get nodes
+k3d delete

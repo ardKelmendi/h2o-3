@@ -446,6 +446,9 @@ test-hadoop-multinode:
 	cd h2o-hadoop-common/tests_multinode/python && ../../../scripts/run.py --wipeall --nointernal --usecloud "$$CLOUD_IP:$$CLOUD_PORT"
 	cd h2o-hadoop-common/tests_multinode/R && ../../../scripts/run.py --wipeall --nointernal --usecloud "$$CLOUD_IP:$$CLOUD_PORT"
 
+test-h2o-k8s:
+    cd h2o-k8s/tests/clustering/ && docker build . -t h2o/h2o-clustering && docker run -it -v /var/run/docker.sock:/var/run/docker.sock --network host h2o/h2o-clustering
+
 coverage-junit-algos-jenkins:
 	$(call sed_test_scripts)
 	@$(MAKE) -f $(THIS_FILE) coverage-junit-algos
