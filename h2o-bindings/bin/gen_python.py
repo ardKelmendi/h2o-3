@@ -190,7 +190,8 @@ def gen_module(schema, algo):
     yield "from __future__ import absolute_import, division, print_function, unicode_literals"
     yield ""
     yield "from h2o.estimators.estimator_base import H2OEstimator"
-    yield "from h2o.estimators.targetencoder import H2OTargetEncoderEstimator"
+    if algo != 'targetencoder':
+        yield "from h2o.estimators.targetencoder import H2OTargetEncoderEstimator"
     yield "from h2o.exceptions import H2OValueError"
     yield "from h2o.frame import H2OFrame"
     yield "from h2o.utils.typechecks import assert_is_type, Enum, numeric"
