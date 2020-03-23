@@ -500,7 +500,9 @@ public abstract class Schema<I extends Iced, S extends Schema<I,S>> extends Iced
     }
 
     // Are we parsing an object from a string? NOTE: we might want to make this check more restrictive.
-    if (! fclz.isAssignableFrom(Schema.class) && s != null && s.startsWith("{") && s.endsWith("}")) {
+    if (! fclz.isAssignableFrom(Schema.class) &&
+        ! fclz.isAssignableFrom(KeyV3.class) && // PUBDEV-7394
+        s != null && s.startsWith("{") && s.endsWith("}")) {
       return gson.fromJson(s, fclz);
     }
 
@@ -513,8 +515,15 @@ public abstract class Schema<I extends Iced, S extends Schema<I,S>> extends Iced
     if (KeyV3.class.isAssignableFrom(fclz)) {
       if ((s == null || s.length() == 0) && required) throw new H2OKeyNotFoundArgumentException(field_name, s);
       if (!required && (s == null || s.length() == 0)) return null;
-
-      return KeyV3.make(fclz, Key.make(s.startsWith("\"") ? s.substring(1, s.length() - 1) : s)); // If the key name is in an array we need to trim surrounding quotes.
+      // If the key name is in an array we need to trim surrounding quotes.
+      s = s.startsWith("\"") ? s.substring(1, s.length() - 1) : s;
+      // guess if the s is a JSON encoded value
+      if (s.startsWith("{")) { // PUBDEV-7394
+        // s should contain here just the JSON encoded value ({"value":"xxxx"})
+        Properties parsedS = gson.fromJson(s, Properties.class);
+        s = parsedS.getProperty("value");
+      }
+      return KeyV3.make(fclz, Key.make(s));
     }
 
     if (Enum.class.isAssignableFrom(fclz)) {
