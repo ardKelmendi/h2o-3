@@ -813,6 +813,7 @@ Pavel Pscheidl
 Michal Kurka
 Veronika Maurerova
 Jan Sterba
+Ard Kelmendi
 ```
 
 <a name="Advisors"></a>
